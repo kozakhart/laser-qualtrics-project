@@ -1,0 +1,7 @@
+### Laser Qualtrics Project
+1) Initialize venv with python -m venv venv
+2) Source your venv (Windows- ./venv/bin/activate)
+3) pip install -r requirements.txt (I think all dependencies are listed. If not, feel free to add to requirements.txt)
+4) Create your .env file
+5) Retrieve your csv file with qualtrics_api.py
+6)Retrieve audio with get_audio.py
