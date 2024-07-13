@@ -87,7 +87,7 @@ def get_progress(token, surveyId, exportProgressId):
 
         if status == "complete":
             fileId = json.loads(decoded)["result"]["fileId"]
-            get_export(token, surveyId, fileId)
+            get_export2(token, surveyId, fileId)
             break
         else:
             print("Export not complete. Current status:", status)
@@ -113,24 +113,24 @@ def get_export(token, surveyId, fileId):
         print("Failed to download response file. Status code:", response.status_code)
 
 def get_export2(token, surveyId, fileId):
-    conn = http.client.HTTPSConnection("sjc1.qualtrics.com")
-
+    url = f"https://sjc1.qualtrics.com/API/v3/surveys/{surveyId}/export-responses/{fileId}/file"
     headers = {
-        'Accept': "application/octet-stream, application/json",
+        'Content-Type': 'application/zip',
         'X-API-TOKEN': token
     }
 
-    conn.request("GET", f"/API/v3/surveys/{surveyId}/export-responses/{fileId}/file", headers=headers)
-
-    res = conn.getresponse()
-    data = res.read()
-    if res.status == 200:
-        # Assuming you want to save the file with the same name as the fileId
-        with open(f"{fileId}.csv", "wb") as f:
-            f.write(data)
-        print("CSV file downloaded successfully.")
+    response = requests.get(url, headers=headers)
+    output_zip = "output.zip"
+    if response.status_code == 200:
+        with open(output_zip, 'wb') as f:
+            f.write(response.content)
+        print(f"Response file downloaded successfully as {output_zip}")
+        with zipfile.ZipFile(output_zip, 'r') as zip_ref:
+            zip_ref.extractall(encoding='utf-8')
+        print("Zip file contents extracted to current directory.")
     else:
-        print("Failed to download CSV file. Status code:", res.status)
+        print("Failed to download response file. Status code:", response.status_code)
 
 
-start_export(qualtrics_token, test_survey_id)
+
+start_export(qualtrics_token, 'SV_9XE4nP54e6GMvsy')
